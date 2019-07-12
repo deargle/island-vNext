@@ -1,0 +1,44 @@
+## this is the incoming mail receiver container template
+##
+## After making changes to this file, you MUST rebuild
+## /var/discourse/launcher rebuild mail-receiver
+##
+## BE *VERY* CAREFUL WHEN EDITING!
+## YAML FILES ARE SUPER SUPER SENSITIVE TO MISTAKES IN WHITESPACE OR ALIGNMENT!
+## visit http://www.yamllint.com/ to validate this file as needed
+
+base_image: discourse/mail-receiver:1.1.2
+update_pups: false
+
+#expose:
+#  - "25:25"   # SMTP
+
+docker_args:
+  - '--network nginx-proxy'
+  - '-p 128.187.61.25:25:25'
+
+env:
+  LANG: en_US.UTF-8
+
+  ## Where e-mail to your forum should be sent.  In general, it's perfectly fine
+  ## to use the same domain as the forum itself here.
+  MAIL_DOMAIN: island.byu.edu
+
+  ## The URL of the mail processing endpoint of your Discourse forum.
+  ## This is simply your forum's base URL, with `/admin/email/handle_mail`
+  ## appended.  Be careful if you're running a subfolder setup -- in that case,
+  ## the URL needs to have the subfolder included!
+  DISCOURSE_MAIL_ENDPOINT: 'https://island.byu.edu/admin/email/handle_mail'
+
+  ## The master API key of your Discourse forum.  You can get this from
+  ## the "API" tab of your admin panel.
+  DISCOURSE_API_KEY: 0ec152d9a198c4273b933983338c3847bd8dfdac4a6cf88f3bccc477eff885ec
+
+  ## The username to use for processing incoming e-mail.  Unless you have
+  ## renamed the `system` user, you should leave this as-is.
+  DISCOURSE_API_USERNAME: system
+
+volumes:
+  - volume:
+      host: /home/deargle/island/shared/mail-receiver/postfix-spool
+      guest: /var/spool/postfix
