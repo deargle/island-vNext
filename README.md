@@ -10,8 +10,8 @@ First,
 
 * set up the nginx-proxy docker-compose
 
-    git clone https://github.com/deargle/nginx-proxy
-    cd nginx-proxy && docker-compose up -d
+      git clone https://github.com/deargle/nginx-proxy
+      cd nginx-proxy && docker-compose up -d
 
 ## MTA | Outbound mail with DKIM signing -- exim
 
@@ -32,7 +32,7 @@ to configure exim on the host.
 * put `app.yml` into `containers/` folder within discourse-docker checkout
 * check docker args
 
-      ./launcher bootstrap app
+        ./launcher bootstrap app
 
 * follow the steps for restoring island from backup:
 
@@ -67,14 +67,14 @@ to configure exim on the host.
 
 * git clone the discourse-cas repo, `up` that.
 
-    git clone git@github.com:deargle/discourse_cas_sso_byu.git
+      git clone git@github.com:deargle/discourse_cas_sso_byu.git
 
 Look in the `docker-compose` file, it expects two env vars to be available,
 set in `.env`. One is the `sso_secret`.
 
 then,
 
-    docker-compose up -d
+      docker-compose up -d
 
 
 ## Inbound mail
@@ -87,12 +87,12 @@ then,
 
 then,
 
-    `./launcher bootstrap main-receiver`
+      ./launcher bootstrap main-receiver
 
 
 # IOSFlashcards
 
-    git clone git@github.com:deargle/iosflashcards.git
+      git clone git@github.com:deargle/iosflashcards.git
 
 Has its own README, it's just a docker command to spin it up.
 Runs on the nginx-proxy network.
