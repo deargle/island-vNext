@@ -16,7 +16,7 @@ templates:
 #  - "templates/web.ssl.template.yml"
 #  - "templates/web.socketed.template.yml"  # <-- Added
 #  - "templates/web.letsencrypt.ssl.template.yml"
- 
+
 ## which TCP/IP ports should this container expose?
 ## If you want Discourse to share a port with another webserver like Apache or nginx,
 ## see https://meta.discourse.org/t/17247 for details
@@ -32,6 +32,7 @@ docker_args:
   - '-e LETSENCRYPT_EMAIL=dave@daveeargle.com'
   - '--expose 80'
   - '--expose 443'
+  - '--link exim4:mail'
 
 params:
   db_default_text_search_config: "pg_catalog.english"
@@ -39,10 +40,10 @@ params:
   ## Set db_shared_buffers to a max of 25% of the total memory.
   ## will be set automatically by bootstrap based on detected RAM, or you can override
   db_shared_buffers: "1024MB"
-  
+
   ## can improve sorting performance, but adds memory usage per-connection
   #db_work_mem: "40MB"
-  
+
   ## Which Git revision should this container use? (default: tests-passed)
   #version: tests-passed
 
@@ -56,7 +57,7 @@ env:
 
   ## TODO: The domain name this Discourse instance will respond to
   DISCOURSE_HOSTNAME: island.byu.edu
-  
+
   ## Uncomment if you want the container to be started with the same
   ## hostname (-h option) as specified above (default "$hostname-$config")
   #DOCKER_USE_HOSTNAME: true
@@ -66,14 +67,14 @@ env:
   DISCOURSE_DEVELOPER_EMAILS: ''
 
   ## TODO: The SMTP mail server used to validate new accounts and send notifications
-  DISCOURSE_SMTP_ADDRESS: 172.20.0.1
+  DISCOURSE_SMTP_ADDRESS: mail # docker container, should be linked in above docker arg
   DISCOURSE_SMTP_PORT: 25
   DISCOURSE_SMTP_USER_NAME: ''
   DISCOURSE_SMTP_PASSWORD: ""
   DISCOURSE_SMTP_ENABLE_START_TLS: false           # (optional, default true)
   DISCOURSE_SMTP_AUTHENTICATION: 'none'
   DISCOURSE_SMTP_DOMAIN: island.byu.edu
-  
+
   ## If you added the Lets Encrypt template, uncomment below to get a free SSL certificate
   #LETSENCRYPT_ACCOUNT_EMAIL: dave@daveeargle.com
 
