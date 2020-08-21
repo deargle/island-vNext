@@ -15,7 +15,11 @@ First,
 
 ## MTA | Outbound mail with DKIM signing -- exim
 
-* configure exim on the host to sign messages with dkim (see script below)
+There is a `setup-exim.sh` script in this repo, but I made a docker repo which
+should (hopefully) work as a containerized version of the script, without having
+to configure exim on the host.
+
+* configure exim to sign messages with dkim
 
       git clone git@github.com:deargle/exim4.git
       # place dkim key in the exim4 directory
