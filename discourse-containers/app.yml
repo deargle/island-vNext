@@ -87,10 +87,10 @@ env:
 ## The Docker container is stateless; all data is stored in /shared
 volumes:
   - volume:
-      host: /home/deargle/island/shared/standalone
+      host: /var/discourse/shared/standalone
       guest: /shared
   - volume:
-      host: /home/deargle/island/shared/standalone/log/var-log
+      host: /var/discourse/shared/standalone/log/var-log
       guest: /var/log
 
 ## Plugins go here
@@ -102,6 +102,7 @@ hooks:
         cmd:
           - git clone https://github.com/discourse/docker_manager.git
           - git clone -b category-specific-channels https://github.com/deargle/discourse-slack-plugin.git
+          # I think the slack plugin is stupid
 
 ## Any custom commands to run after building
 run:

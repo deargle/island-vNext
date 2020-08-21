@@ -16,6 +16,7 @@ update_pups: false
 docker_args:
   - '--network nginx-proxy'
   - '-p 128.187.61.25:25:25'
+  - '--env-file ./mail-receiver.env'
 
 env:
   LANG: en_US.UTF-8
@@ -32,7 +33,7 @@ env:
 
   ## The master API key of your Discourse forum.  You can get this from
   ## the "API" tab of your admin panel.
-  DISCOURSE_API_KEY: <REPLACE_ME>
+  # DISCOURSE_API_KEY: <REPLACE_ME> (set in `mail-receiver.env`)
 
   ## The username to use for processing incoming e-mail.  Unless you have
   ## renamed the `system` user, you should leave this as-is.

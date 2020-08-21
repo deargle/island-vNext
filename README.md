@@ -1,54 +1,40 @@
-# how to start from scratch
+# Island vNext via Discourse -- how to start from scratch
 
-# nginx-proxy
+## nginx-proxy
 
-* set up the nginx-proxy docker-compose. pull down nginx.tmpl.
-    * This will give auto letsencrypt
+Needed in front because we're also running the CAS middleware, also does letsencrypt
+
+First,
+
+    docker network create nginx-proxy
+
+* set up the nginx-proxy docker-compose
 
     git clone https://github.com/deargle/nginx-proxy
     cd nginx-proxy && docker-compose up -d
 
-# exim
+## MTA | Outbound mail with DKIM signing -- exim
 
 * configure exim on the host to sign messages with dkim (see script below)
 
       git clone git@github.com:deargle/exim4.git
       # place dkim key in the exim4 directory
+      docker build --tag exim4:1.0 .
+      docker run -d --name exim4 --restart always --network nginx-proxy exim4:1.0
 
-see readme for that repo, but docker build, docker run, etc. make sure to run
-it within the nginx-proxy network
+## Island - Discourse main site
 
-
-# discourse
-
-* git clone discourse-docker into `/home/deargle/island`, drop in the two
-  container config files below. Build them using the discourse `launcher`
-
-
-## app-new.yml
-
-* put this file into `containers/` folder within discourse-docker checkout
-
+* git clone https://github.com/discourse/discourse_docker
+* put `app.yml` into `containers/` folder within discourse-docker checkout
 * check docker args
 
-`./launcher bootstrap app-new.yml`
-
-## mail-receiver.yml
-
-* put this file into `containers/` folder within discourse-docker checkout
-
-* set `DISCOURSE_API_KEY:`
-* bind public port 25 for forwarding as `-p` docker arg
-
-`./launcher bootstrap main-receiver.yml`
-
-
-# restore discourse from backup
+      ./launcher bootstrap app
 
 * follow the steps for restoring island from backup:
 
+        # restore discourse from backup
         # download a backup from one of deargle's aws accounts
-        # and put it into `shared/standalone/backups/default/`. Then:
+        # and put it into `/var/discourse/shared/standalone/backups/default/`. Then:
 
         TARBALL_PATH=$(ls shared/standalone/backups/default/*.tar.gz | tail -n 1)
         TARBALL_NAME=$(basename ${TARBALL_PATH})
@@ -61,21 +47,48 @@ it within the nginx-proxy network
 
         ./launcher rebuild app
 
-# Discourse CAS SSO
+
+
+## Loggin in via BYU CAS - Discourse CAS SSO
+
+* Get the SSO key
+
+  visit https://island.byu.edu/u/admin-login and get it from the GUI
+
+  Or,
+
+      ./launcher enter app-new
+      rails c
+      SiteSetting.find_by(name: 'sso_secret').value
 
 * git clone the discourse-cas repo, `up` that.
 
     git clone git@github.com:deargle/discourse_cas_sso_byu.git
 
-In `config/configatron/defaults.rb`:
-* `configatron.sso.secret`, pull from discourse
+Look in the `docker-compose` file, it expects two env vars to be available,
+set in `.env`. One is the `sso_secret`.
 
 then,
 
     docker-compose up -d
 
+
+## Inbound mail
+
+* copy `mail-receiver.yml` into `containers/` folder within discourse-docker checkout
+
+* Generate a new API key if necessary.
+* set `DISCOURSE_API_KEY` in the template.
+* check proper binding of public port 25 for forwarding as `-p` docker arg
+
+then,
+
+    `./launcher bootstrap main-receiver`
+
+
 # IOSFlashcards
 
-git@github.com:deargle/iosflashcards.git
+    git clone git@github.com:deargle/iosflashcards.git
 
-has its own README, it's just a docker command to spin it up.
+Has its own README, it's just a docker command to spin it up.
+Runs on the nginx-proxy network.
